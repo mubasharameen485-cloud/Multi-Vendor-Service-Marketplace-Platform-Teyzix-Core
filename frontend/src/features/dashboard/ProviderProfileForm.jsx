@@ -9,7 +9,7 @@ const ProviderProfileForm = ({ onSuccess }) => {
     defaultValues: { portfolio: [{ title: '', link: '' }] }
   });
   
-  // React Hook Form ka useFieldArray dynamic portfolio items ke liye
+  
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'portfolio'
@@ -18,7 +18,7 @@ const ProviderProfileForm = ({ onSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [profileData, setProfileData] = useState(null);
 
-  // Pehle se bani hui profile fetch karna
+  
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -31,7 +31,7 @@ const ProviderProfileForm = ({ onSuccess }) => {
           const profile = response.data.data;
           setProfileData(profile);
           
-          // Form ko purane data se fill karna
+          
           setValue('experience', profile.experience);
           setValue('pricing', profile.pricing);
           setValue('skills', Array.isArray(profile.skills) ? profile.skills.join(', ') : '');
@@ -70,15 +70,14 @@ const ProviderProfileForm = ({ onSuccess }) => {
     });
 
     if (response.data.success) {
-      alert('✅ Profile saved successfully!');
-      // Error se bachne ke liye pehle check karein ke prop mojud hai
+      alert('Profile saved successfully!');
+      
       if (onSuccess) {
         onSuccess(); 
       }
     }
   } catch (error) {
-    console.error("DEBUG ERROR:", error); // Console mein check karein error kya hai
-    // Agar success alert aa gaya hai tou error alert na dikhayein
+    console.error("DEBUG ERROR:", error); 
     if (!loading) return; 
     alert(error.response?.data?.message || 'Error updating profile');
   } finally {

@@ -3,6 +3,7 @@ import { AuthContext } from '../../context/AuthContext';
 import ProviderProfileForm from './ProviderProfileForm';
 import axios from 'axios';
 import ListingManager from './ListingManager';
+import OrderTracker from './OrderTracker';
 const ProviderDashboard = () => {
   const { user } = useContext(AuthContext);
   const [profile, setProfile] = useState(null);
@@ -26,10 +27,10 @@ const ProviderDashboard = () => {
     fetchProfile();
   }, []);
 
-  // Jab profile save ho jaye tou isay call karenge
+  
   const handleSaveSuccess = () => {
     setIsEditing(false);
-    fetchProfile(); // Naya data load karne ke liye
+    fetchProfile(); 
   };
 
   return (
@@ -128,6 +129,7 @@ const ProviderDashboard = () => {
               <p className="text-gray-400 italic">No portfolio projects added yet.</p>
             )}
             <ListingManager />
+            <OrderTracker role="SERVICE_PROVIDER" />
           </div>
         </div>
       )}

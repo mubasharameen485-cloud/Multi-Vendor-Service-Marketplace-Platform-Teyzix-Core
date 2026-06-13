@@ -33,7 +33,7 @@ const ListingManager = () => {
       await axios.post('http://localhost:5000/api/listings', formData, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      alert("✅ Service added successfully!");
+      alert(" Service added successfully!");
       setFormData({ title: '', description: '', category: '', price: '', deliveryTime: '' });
       setShowForm(false);
       fetchMyListings();

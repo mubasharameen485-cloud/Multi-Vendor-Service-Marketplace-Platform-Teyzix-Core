@@ -74,10 +74,9 @@ export const deleteListing = async (req, res) => {
 // GET: Fetch ALL listings (Public/Customers can browse)
 export const getAllListings = async (req, res) => {
     try {
-    
-        const listings = await Listing.find().populate('provider', 'name email').sort({ createdAt: -1 });
-        res.status(200).json({ success: true, count: listings.length, data: listings });
+        const listings = await Listing.find().populate('provider', 'name email'); // Provider ko populate karna zaroori hai
+        res.status(200).json({ success: true, data: listings });
     } catch (error) {
-        res.status(500).json({ success: false, message: 'Error fetching listings', error: error.message });
+        res.status(500).json({ success: false, message: error.message });
     }
 };

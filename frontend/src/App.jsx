@@ -8,6 +8,7 @@ import ProviderDashboard from './features/dashboard/ProviderDashboard';
 import AdminDashboard from './features/dashboard/AdminDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
+import CustomerBrowse from './features/dashboard/CustomerBrowse';
 
 const Home = () => (
   <div className="p-8 text-center">
@@ -20,42 +21,53 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 flex flex-col">
           <Navbar />
 
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            
-            {/* Protected Routes - Role Based */}
-            <Route 
-              path="/customer-dashboard" 
-              element={
-                <ProtectedRoute allowedRoles={['CUSTOMER']}>
-                  <CustomerDashboard />
-                </ProtectedRoute>
-              } 
-            />
-            
-            <Route 
-              path="/provider-dashboard" 
-              element={
-                <ProtectedRoute allowedRoles={['SERVICE_PROVIDER']}>
-                  <ProviderDashboard />
-                </ProtectedRoute>
-              } 
-            />
-            
-            <Route 
-              path="/admin-dashboard" 
-              element={
-                <ProtectedRoute allowedRoles={['ADMIN']}>
-                  <AdminDashboard />
-                </ProtectedRoute>
-              } 
-            />
-          </Routes>
+          <main className="flex-grow">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              
+              {/* Protected Routes - Sab <Routes> ke andar hone chahiye */}
+              <Route 
+                path="/customer-dashboard" 
+                element={
+                  <ProtectedRoute allowedRoles={['CUSTOMER']}>
+                    <CustomerDashboard />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              <Route 
+                path="/provider-dashboard" 
+                element={
+                  <ProtectedRoute allowedRoles={['SERVICE_PROVIDER']}>
+                    <ProviderDashboard />
+                  </ProtectedRoute>
+                } 
+              />
+
+              <Route 
+                path="/browse-services" 
+                element={
+                  <ProtectedRoute allowedRoles={['CUSTOMER']}>
+                    <CustomerBrowse />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              <Route 
+                path="/admin-dashboard" 
+                element={
+                  <ProtectedRoute allowedRoles={['ADMIN']}>
+                    <AdminDashboard />
+                  </ProtectedRoute>
+                } 
+              />
+            </Routes>
+          </main>
 
           <Footer />
         </div>
