@@ -4,10 +4,12 @@ import ProviderProfileForm from './ProviderProfileForm';
 import axios from 'axios';
 import ListingManager from './ListingManager';
 import OrderTracker from './OrderTracker';
+
 const ProviderDashboard = () => {
   const { user } = useContext(AuthContext);
   const [profile, setProfile] = useState(null);
-  const [isEditing, setIsEditing] = useState(false); // Toggle between View and Edit
+  const [isEditing, setIsEditing] = useState(false);
+  const [ratingStats, setRatingStats] = useState({ avg: 0, total: 0 });
 
   const fetchProfile = async () => {
     try {
@@ -23,11 +25,29 @@ const ProviderDashboard = () => {
     }
   };
 
+  const fetchRating = async () => {
+  try {
+    const providerId = profile?.user?._id || profile?.user; // Try both
+    if (!providerId) return;
+    
+    const res = await axios.get(`http://localhost:5000/api/reviews/provider/${providerId}`);
+    setRatingStats({ 
+      avg: res.data.avgRating || 0, 
+      total: res.data.totalReviews || 0 
+    });
+  } catch (err) {
+    console.log("Rating fetch error", err);
+  }
+};
+
   useEffect(() => {
     fetchProfile();
   }, []);
 
-  
+  useEffect(() => {
+    if (profile || user) fetchRating();
+  }, [profile, user]);
+
   const handleSaveSuccess = () => {
     setIsEditing(false);
     fetchProfile(); 
@@ -42,18 +62,13 @@ const ProviderDashboard = () => {
       </div>
 
       {isEditing ? (
-        // EDIT MODE
         <div>
-          <button 
-            onClick={() => setIsEditing(false)}
-            className="mb-4 text-green-700 font-medium hover:underline"
-          >
+          <button onClick={() => setIsEditing(false)} className="mb-4 text-green-700 font-medium hover:underline">
             ← Back to Dashboard
           </button>
           <ProviderProfileForm onSuccess={handleSaveSuccess} />
         </div>
       ) : (
-        // VIEW MODE (DASHBOARD)
         <div className="space-y-6">
           {/* Profile Card */}
           <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
@@ -81,56 +96,38 @@ const ProviderDashboard = () => {
                     Edit Profile
                   </button>
                 </div>
-
                 <div className="mt-6 flex flex-wrap gap-2">
                   {profile?.skills?.map((skill, index) => (
-                    <span key={index} className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-xs font-bold border border-green-100">
-                      {skill}
-                    </span>
+                    <span key={index} className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-xs font-bold border border-green-100">{skill}</span>
                   ))}
                 </div>
               </div>
             </div>
             
-            {/* Stats Bar */}
-            <div className="bg-gray-50 border-t grid grid-cols-3 divide-x text-center py-4">
-              <div>
+            {/* Stats Bar (Now with Rating) */}
+            <div className="bg-gray-50 border-t grid grid-cols-2 md:grid-cols-4 divide-x text-center py-4">
+              <div className="py-2">
                 <p className="text-xs text-gray-500 uppercase font-bold">Hourly Rate</p>
                 <p className="text-xl font-bold text-gray-800">${profile?.pricing || 0}</p>
               </div>
-              <div>
+              <div className="py-2">
+                <p className="text-xs text-gray-500 uppercase font-bold">Rating</p>
+                <p className="text-xl font-bold text-yellow-500">⭐ {ratingStats.avg}</p>
+                <p className="text-[10px] text-gray-400">({ratingStats.total} Reviews)</p>
+              </div>
+              <div className="py-2">
                 <p className="text-xs text-gray-500 uppercase font-bold">Projects</p>
                 <p className="text-xl font-bold text-gray-800">{profile?.portfolio?.length || 0}</p>
               </div>
-              <div>
+              <div className="py-2">
                 <p className="text-xs text-gray-500 uppercase font-bold">Status</p>
                 <p className="text-xl font-bold text-green-600">Active</p>
               </div>
             </div>
           </div>
 
-          {/* Portfolio Section */}
-          <div className="bg-white p-6 rounded-xl shadow-md border border-gray-100">
-            <h3 className="text-lg font-bold mb-4 border-b pb-2">Portfolio Projects</h3>
-            {profile?.portfolio && profile.portfolio.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {profile.portfolio.map((item, idx) => (
-                  <div key={idx} className="p-4 border rounded-lg hover:border-green-400 transition-colors">
-                    <p className="font-bold text-gray-700">{item.title}</p>
-                    {item.link && (
-                      <a href={item.link} target="_blank" rel="noreferrer" className="text-blue-500 text-xs hover:underline">
-                        View Project ↗
-                      </a>
-                    )}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-gray-400 italic">No portfolio projects added yet.</p>
-            )}
-            <ListingManager />
-            <OrderTracker role="SERVICE_PROVIDER" />
-          </div>
+          <ListingManager />
+          <OrderTracker role="SERVICE_PROVIDER" />
         </div>
       )}
     </div>

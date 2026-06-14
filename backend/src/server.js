@@ -9,6 +9,8 @@ import adminRoutes from './features/admin/admin.routes.js';
 import { setupAdminAccount } from './config/seedAdmin.js';
 import listingRoutes from './features/listings/listing.routes.js';
 import requestRoutes from './features/requests/request.routes.js';
+import reviewRoutes from './features/reviews/review.routes.js';
+
 // Load environment variables
 dotenv.config();
 
@@ -32,6 +34,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/listings', listingRoutes);
 // Root endpoint for testing
 app.use('/api/requests', requestRoutes);
+app.use('/api/reviews', reviewRoutes);
 app.get('/', (req, res) => {
     res.send('Teyzix Core Marketplace API is running...');
 });
