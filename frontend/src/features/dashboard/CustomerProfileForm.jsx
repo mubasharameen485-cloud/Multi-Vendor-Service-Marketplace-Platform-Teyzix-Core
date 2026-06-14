@@ -16,8 +16,7 @@ const CustomerProfileForm = ({ user, onSuccess }) => {
       formData.append('name', data.name);
       if (data.profilePic[0]) formData.append('profilePic', data.profilePic[0]);
 
-      // Hum wahi provider wala endpoint use kar sakte hain agar backend common hai, 
-      // ya phir ek naya customer update endpoint bana sakte hain.
+      
       await axios.post('http://localhost:5000/api/auth/update-profile', formData, {
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
       });

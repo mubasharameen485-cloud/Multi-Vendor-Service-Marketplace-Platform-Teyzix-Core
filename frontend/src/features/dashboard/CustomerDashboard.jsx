@@ -4,7 +4,7 @@ import OrderTracker from './OrderTracker';
 import axios from 'axios';
 
 const CustomerDashboard = () => {
-  // updateUserData function ko context se nikalen
+  
   const { user, updateUserData } = useContext(AuthContext);
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(user?.name || '');
@@ -30,14 +30,14 @@ const CustomerDashboard = () => {
       });
 
       if (res.data.success) {
-        // ADVANCED FIX: Direct state update ke bajaye context function use karein
+        
         updateUserData(res.data.data); 
-        alert("✅ Profile Updated Successfully!");
+        alert(" Profile Updated Successfully!");
         setIsEditing(false);
       }
     } catch (err) {
       console.error("Update Error:", err);
-      alert("❌ Failed to update. Check your internet/keys.");
+      alert("Failed to update. Check your internet/keys.");
     } finally {
       setLoading(false);
     }
