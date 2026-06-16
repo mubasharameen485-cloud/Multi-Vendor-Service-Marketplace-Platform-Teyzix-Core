@@ -1,29 +1,65 @@
+// TOP PAR IMPORTS KO UPDATE KAREIN:
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import http from 'http'; // Naya Import
+import { Server } from 'socket.io'; // Naya Import
 import connectDB from './config/db.js';
+import { setupAdminAccount } from './config/seedAdmin.js';
+
+// Routes Imports
 import authRoutes from './features/auth/auth.routes.js';
 import customerRoutes from './features/customer/customer.routes.js';
 import providerRoutes from './features/provider/provider.routes.js';
 import adminRoutes from './features/admin/admin.routes.js';
-import { setupAdminAccount } from './config/seedAdmin.js';
 import listingRoutes from './features/listings/listing.routes.js';
 import requestRoutes from './features/requests/request.routes.js';
 import reviewRoutes from './features/reviews/review.routes.js';
+import chatRoutes from './features/chat/chat.routes.js'; // Naya Import
 
-// Load environment variables
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware setup
+// HTTP Server aur Socket.io Setup
+const server = http.createServer(app);
+const io = new Server(server, {
+    cors: { origin: '*' }
+});
+
+// Socket.io Logic (Real-time events)
+io.on('connection', (socket) => {
+    console.log('User Connected: ', socket.id);
+
+    // Jab 2 log chat open karein tou ek Room ban jaye
+    socket.on('join_chat', (room) => {
+        socket.join(room);
+        console.log(`User joined room: ${room}`);
+    });
+
+    // Real-time Message bhejna
+    socket.on('send_message', (data) => {
+        io.to(data.room).emit('receive_message', data);
+    });
+
+    // Real-time Delete Message (Dusre ki screen se bhi ghayab karne k liye)
+    socket.on('delete_message', (data) => {
+        io.to(data.room).emit('message_deleted', data.msgId);
+    });
+
+    socket.on('disconnect', () => {
+        console.log('User Disconnected: ', socket.id);
+    });
+});
+
+// Middlewares
 app.use(express.json());
 app.use(cors());
 
 // Database connection
 connectDB().then(() => {
-    setupAdminAccount(); // Create admin if it doesn't exist
+    setupAdminAccount();
 });
 
 // API Routes
@@ -32,14 +68,11 @@ app.use('/api/customer', customerRoutes);
 app.use('/api/provider', providerRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/listings', listingRoutes);
-// Root endpoint for testing
 app.use('/api/requests', requestRoutes);
 app.use('/api/reviews', reviewRoutes);
-app.get('/', (req, res) => {
-    res.send('Teyzix Core Marketplace API is running...');
-});
+app.use('/api/chat', chatRoutes); // Chat Route laga dia
 
-// Start the server
-app.listen(PORT, () => {
+// Start Server (app.listen ki jagah server.listen hoga ab)
+server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

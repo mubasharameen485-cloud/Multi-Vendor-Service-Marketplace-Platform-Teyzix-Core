@@ -1,1 +1,38 @@
 @import "tailwindcss";
+
+/* Tailwind v4 mein dark mode variant ko enable karne ka sahi tareeqa */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  /* Default Styles (Light Mode) */
+  :root {
+    --bg-color: #f9fafb; /* gray-50 */
+    --text-color: #111827; /* gray-900 */
+  }
+
+  /* Dark Mode Styles */
+  .dark {
+    --bg-color: #0f172a; /* gray-900 / slate-900 */
+    --text-color: #f9fafb; /* gray-50 */
+  }
+
+  body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+}
+
+/* Jo components white hain, unhein dark mode mein gray karne ke liye global classes */
+.dark .bg-white {
+  background-color: #1e293b !important; /* slate-800 */
+  color: white !important;
+}
+
+.dark .text-gray-800, .dark .text-gray-900 {
+  color: #f1f5f9 !important;
+}
+
+.dark border {
+  border-color: #334155 !important;
+}
