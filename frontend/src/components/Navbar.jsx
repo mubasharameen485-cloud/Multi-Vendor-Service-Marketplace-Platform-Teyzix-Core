@@ -1,12 +1,12 @@
 import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { ThemeContext } from '../context/ThemeContext'; // Import ThemeContext
-import { Sun, Moon } from 'lucide-react'; // Icons ke liye
+import { ThemeContext } from '../context/ThemeContext'; 
+import { Sun, Moon } from 'lucide-react'; 
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
-  const { isDarkMode, toggleTheme } = useContext(ThemeContext); // Dark mode logic
+  const { isDarkMode, toggleTheme } = useContext(ThemeContext); 
   const navigate = useNavigate();
 
   const handleLogout = () => {

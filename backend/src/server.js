@@ -1,4 +1,4 @@
-// TOP PAR IMPORTS KO UPDATE KAREIN:
+
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
@@ -16,13 +16,13 @@ import listingRoutes from './features/listings/listing.routes.js';
 import requestRoutes from './features/requests/request.routes.js';
 import reviewRoutes from './features/reviews/review.routes.js';
 import chatRoutes from './features/chat/chat.routes.js'; // Naya Import
-
+import activityRoutes from './features/activity/activity.routes.js';
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// HTTP Server aur Socket.io Setup
+
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: { origin: '*' }
@@ -32,18 +32,18 @@ const io = new Server(server, {
 io.on('connection', (socket) => {
     console.log('User Connected: ', socket.id);
 
-    // Jab 2 log chat open karein tou ek Room ban jaye
+    
     socket.on('join_chat', (room) => {
         socket.join(room);
         console.log(`User joined room: ${room}`);
     });
 
-    // Real-time Message bhejna
+    
     socket.on('send_message', (data) => {
         io.to(data.room).emit('receive_message', data);
     });
 
-    // Real-time Delete Message (Dusre ki screen se bhi ghayab karne k liye)
+    
     socket.on('delete_message', (data) => {
         io.to(data.room).emit('message_deleted', data.msgId);
     });
@@ -70,9 +70,9 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/listings', listingRoutes);
 app.use('/api/requests', requestRoutes);
 app.use('/api/reviews', reviewRoutes);
-app.use('/api/chat', chatRoutes); // Chat Route laga dia
+app.use('/api/chat', chatRoutes); 
+app.use('/api/activity', activityRoutes);
 
-// Start Server (app.listen ki jagah server.listen hoga ab)
 server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
