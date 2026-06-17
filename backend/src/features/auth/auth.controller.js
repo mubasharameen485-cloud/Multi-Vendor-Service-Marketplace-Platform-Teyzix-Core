@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from './auth.model.js';
 import cloudinary from '../../config/cloudinary.js';
-
+import { logActivity } from '../activity/activity.controller.js';
 // Cloudinary Upload Helper
 const streamUpload = (fileBuffer) => {
     return new Promise((resolve, reject) => {
@@ -84,7 +84,7 @@ export const loginUser = async (req, res) => {
             process.env.JWT_SECRET,
             { expiresIn: '7d' }
         );
-
+ await logActivity(user._id, 'Logged In', 'User logged into the platform successfully.');
         return res.status(200).json({
             success: true,
             message: 'Login successful.',
@@ -130,7 +130,7 @@ export const updateProfile = async (req, res) => {
             updateData, 
             { new: true }
         ).select('-password');
-
+ await logActivity(userId, 'Updated Profile', 'Changed personal information or photo.');
         res.status(200).json({ success: true, data: updatedUser });
     } catch (error) {
         console.error("Profile Update Error:", error); // Terminal mein error dikhayega

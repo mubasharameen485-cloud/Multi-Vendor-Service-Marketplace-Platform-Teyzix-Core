@@ -1,4 +1,5 @@
 import Review from './review.model.js';
+import { logActivity } from '../activity/activity.controller.js';
 
 // Add Review (Customer only)
 export const addReview = async (req, res) => {
@@ -15,7 +16,7 @@ export const addReview = async (req, res) => {
             rating,
             feedback
         });
-
+await logActivity(req.user.id, 'Submitted Review', `Gave ${rating} stars for the service.`);
         res.status(201).json({ success: true, message: 'Review submitted successfully!', data: newReview });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Error adding review', error: error.message });

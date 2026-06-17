@@ -1,5 +1,6 @@
 import ServiceRequest from './request.model.js';
 import Listing from '../listings/listing.model.js';
+import { logActivity } from '../activity/activity.controller.js';
 
 // Customer: Submit a new service request
 export const createRequest = async (req, res) => {
@@ -17,7 +18,7 @@ export const createRequest = async (req, res) => {
             budget,
             deadline,
         });
-
+await logActivity(req.user.id, 'Sent Service Request', `Ordered service with budget $${budget}`);
         res.status(201).json({ success: true, message: 'Request submitted successfully', data: newRequest });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Error submitting request', error: error.message });
@@ -66,6 +67,7 @@ export const updateRequestStatus = async (req, res) => {
         );
 
         if (!updatedReq) return res.status(404).json({ success: false, message: 'Request not found' });
+await logActivity(req.user.id, 'Updated Order Status', `Marked order as ${status}`);
 
         res.status(200).json({ success: true, message: `Order marked as ${status}`, data: updatedReq });
     } catch (error) {

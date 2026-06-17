@@ -1,5 +1,5 @@
 import Listing from './listing.model.js';
-
+import { logActivity } from '../activity/activity.controller.js';
 // CREATE: Add a new service listing
 export const createListing = async (req, res) => {
     try {
@@ -17,7 +17,7 @@ export const createListing = async (req, res) => {
             price,
             deliveryTime,
         });
-
+await logActivity(req.user.id, 'Created Listing', `Service added: ${title}`);
         res.status(201).json({ success: true, message: 'Listing created successfully', data: newListing });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Error creating listing', error: error.message });

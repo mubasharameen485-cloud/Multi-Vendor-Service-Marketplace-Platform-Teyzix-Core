@@ -4,6 +4,7 @@ import ProviderProfileForm from './ProviderProfileForm';
 import axios from 'axios';
 import ListingManager from './ListingManager';
 import OrderTracker from './OrderTracker';
+import ActivityLog from './ActivityLog'; // Added Import
 
 const ProviderDashboard = () => {
   const { user } = useContext(AuthContext);
@@ -104,7 +105,7 @@ const ProviderDashboard = () => {
               </div>
             </div>
             
-            {/* Stats Bar (Integrated correctly) */}
+            {/* Stats Bar */}
             <div className="bg-gray-50 dark:bg-gray-800/50 border-t dark:border-gray-700 grid grid-cols-2 md:grid-cols-4 divide-x dark:divide-gray-700 text-center py-4">
               <div className="py-2">
                 <p className="text-xs text-gray-500 dark:text-gray-400 uppercase font-bold tracking-wider">Hourly Rate</p>
@@ -128,6 +129,9 @@ const ProviderDashboard = () => {
 
           <ListingManager />
           <OrderTracker role="SERVICE_PROVIDER" />
+
+          {/* Activity Logs Section - Added Here */}
+          <ActivityLog />
         </div>
       )}
     </div>
