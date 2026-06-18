@@ -116,4 +116,17 @@ Run the React development server:
 code
 Bash
 npm run dev
-Open http://localhost:5173 in your browser. The backend runs on http://localhost:5000.    
+Open http://localhost:5173 in your browser. The backend runs on http://localhost:5000.
+ <img width="1366" height="728" alt="Screenshot from 2026-06-18 10-46-11" src="https://github.com/user-attachments/assets/8f4f32c4-97cd-4d87-9e8d-2271b4faab97" />
+<img width="1366" height="728" alt="Screenshot from 2026-06-18 10-46-31" src="https://github.com/user-attachments/assets/bb483d76-1c93-41cd-b60a-9590d75b19a4" />
+<img width="1366" height="728" alt="Screenshot from 2026-06-18 10-46-38" src="https://github.com/user-attachments/assets/5e5a9710-5190-415d-9bcb-50f6e2a723cf" />
+<img width="1366" height="768" alt="Screenshot from 2026-06-18 10-46-43" src="https://github.com/user-attachments/assets/22fd1fdd-5446-4c57-a2d1-da6a05eeb444" />
+<img width="1366" height="728" alt="Screenshot from 2026-06-18 10-46-52" src="https://github.com/user-attachments/assets/5bfadccc-316d-4e1f-ac67-cf9e062c89b8" />
+<img width="1366" height="728" alt="Screenshot from 2026-06-18 10-46-58" src="https://github.com/user-attachments/assets/3ba317fb-6138-415c-b11c-4c1c7cf1826a" />
+<img width="1366" height="728" alt="Screenshot from 2026-06-18 10-47-13" src="https://github.com/user-attachments/assets/9fae53a5-89f3-4d1c-9241-a187260a78df" />
+<img width="1366" height="728" alt="Screenshot from 2026-06-18 10-47-23" src="https://github.com/user-attachments/assets/bcc64ec1-afaf-4d76-bd0e-73de6e9a100d" />
+<img width="1366" height="728" alt="Screenshot from 2026-06-18 10-47-29" src="https://github.com/user-attachments/assets/bc60263c-397b-435b-9c2f-50b0753c0a7c" />
+<img width="1366" height="728" alt="Screenshot from 2026-06-18 10-47-32" src="https://github.com/user-attachments/assets/5543f30d-85b7-4f9b-a676-b80387a824f6" />
+<img width="1366" height="728" alt="Screenshot from 2026-06-18 10-47-36" src="https://github.com/user-attachments/assets/ee218d2c-ecca-4e1f-90e6-c3b801759dde" />
+<img width="1366" height="728" alt="Screenshot from 2026-06-18 10-47-47" src="https://github.com/user-attachments/assets/56f1d1f2-998e-45af-a760-661e243f8198" />
+
