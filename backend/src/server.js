@@ -17,6 +17,7 @@ import requestRoutes from './features/requests/request.routes.js';
 import reviewRoutes from './features/reviews/review.routes.js';
 import chatRoutes from './features/chat/chat.routes.js'; // Naya Import
 import activityRoutes from './features/activity/activity.routes.js';
+import paymentRoutes from './features/payment/payment.routes.js';
 dotenv.config();
 
 const app = express();
@@ -72,7 +73,7 @@ app.use('/api/requests', requestRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/chat', chatRoutes); 
 app.use('/api/activity', activityRoutes);
-
+app.use('/api/payment', paymentRoutes);
 server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

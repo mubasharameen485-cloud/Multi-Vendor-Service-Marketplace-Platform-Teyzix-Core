@@ -1,7 +1,7 @@
 import ServiceRequest from './request.model.js';
 import Listing from '../listings/listing.model.js';
 import { logActivity } from '../activity/activity.controller.js';
-
+import { sendEmailNotification } from '../../config/email.js';
 // Customer: Submit a new service request
 export const createRequest = async (req, res) => {
     try {
@@ -54,23 +54,23 @@ export const updateRequestStatus = async (req, res) => {
     try {
         const { requestId, status } = req.body;
         
-        // Status transitions validate karein (optional)
-        const validStatuses = ['Accepted', 'In Progress', 'Completed', 'Delivered'];
-        if (!validStatuses.includes(status)) {
-            return res.status(400).json({ success: false, message: 'Invalid status update' });
-        }
+        // Find request and populate customer email
+        const request = await ServiceRequest.findById(requestId).populate('customer', 'name email');
+        
+        if (!request) return res.status(404).json({ success: false, message: 'Request not found' });
 
-        const updatedReq = await ServiceRequest.findOneAndUpdate(
-            { _id: requestId, provider: req.user.id }, // Sirf provider hi update kar sake
-            { status },
-            { new: true }
-        );
+        request.status = status;
+        await request.save();
 
-        if (!updatedReq) return res.status(404).json({ success: false, message: 'Request not found' });
-await logActivity(req.user.id, 'Updated Order Status', `Marked order as ${status}`);
+        // 📧 SEND EMAIL NOTIFICATION TO CUSTOMER
+        const emailSubject = `Order Status Updated: ${status}`;
+        const emailText = `Hello ${request.customer.name},\n\nYour service request status has been updated to: ${status}.\n\nPlease check your Teyzix Dashboard for details.\n\nRegards,\nTeyzix Team`;
+        
+        // Asynchronously send email (don't await so API is fast)
+        sendEmailNotification(request.customer.email, emailSubject, emailText);
 
-        res.status(200).json({ success: true, message: `Order marked as ${status}`, data: updatedReq });
+        res.status(200).json({ success: true, message: `Status updated to ${status}` });
     } catch (error) {
-        res.status(500).json({ success: false, message: 'Update failed', error: error.message });
+        res.status(500).json({ success: false, message: 'Error updating status' });
     }
 };

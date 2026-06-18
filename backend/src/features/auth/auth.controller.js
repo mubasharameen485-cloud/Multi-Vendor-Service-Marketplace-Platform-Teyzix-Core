@@ -110,34 +110,56 @@ export const updateProfile = async (req, res) => {
         let updateData = {};
         if (name) updateData.name = name;
 
-        // Image upload logic
+        // Image upload logic with proper error capturing
         if (req.file) {
-            const uploadResult = await new Promise((resolve, reject) => {
-                const stream = cloudinary.uploader.upload_stream(
-                    { folder: 'teyzix_users' },
-                    (error, result) => {
-                        if (error) reject(error);
-                        else resolve(result);
-                    }
-                );
-                stream.end(req.file.buffer);
-            });
-            updateData.profilePicture = uploadResult.secure_url;
+            try {
+                const uploadResult = await new Promise((resolve, reject) => {
+                    const stream = cloudinary.uploader.upload_stream(
+                        { 
+                            folder: 'teyzix_users',
+                            resource_type: "auto" // Automatically detect file type
+                        },
+                        (error, result) => {
+                            if (error) {
+                                console.error("!!! CLOUDINARY UPLOAD ERROR !!!", error);
+                                reject(error);
+                            } else {
+                                resolve(result);
+                            }
+                        }
+                    );
+                    stream.end(req.file.buffer);
+                });
+                updateData.profilePicture = uploadResult.secure_url;
+            } catch (uploadErr) {
+                // Agar Cloudinary fail ho tou yahin se wapas bhej do bajaye pooray server crash hone k
+                return res.status(500).json({ 
+                    success: false, 
+                    message: 'Cloudinary upload failed. Check keys or connection.', 
+                    error: uploadErr.message 
+                });
+            }
         }
 
         const updatedUser = await User.findByIdAndUpdate(
             userId, 
             updateData, 
-            { new: true }
+            { new: true, runValidators: true }
         ).select('-password');
- await logActivity(userId, 'Updated Profile', 'Changed personal information or photo.');
+
+        if (!updatedUser) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        await logActivity(userId, 'Updated Profile', 'Changed personal information or photo.');
+        
         res.status(200).json({ success: true, data: updatedUser });
+
     } catch (error) {
-        console.error("Profile Update Error:", error); // Terminal mein error dikhayega
-        res.status(500).json({ success: false, message: 'Internal Server Error' });
+        console.error("General Update Error:", error);
+        res.status(500).json({ success: false, message: 'Server error in updating profile' });
     }
 };
-
 // Handle user logout
 export const logoutUser = (req, res) => {
     return res.status(200).json({ success: true, message: 'Logged out successfully.' });

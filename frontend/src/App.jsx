@@ -10,13 +10,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext'; // Import this
 import CustomerBrowse from './features/dashboard/CustomerBrowse';
+import Home from './pages/Home'; 
 
-const Home = () => (
-  <div className="p-8 text-center">
-    <h1 className="text-3xl font-bold dark:text-white">Welcome to Teyzix Marketplace</h1>
-    <p className="text-gray-600 dark:text-gray-400 mt-2">Find trusted service providers for your business.</p>
-  </div>
-);
 
 function App() {
   return (

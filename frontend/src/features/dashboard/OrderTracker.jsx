@@ -7,7 +7,6 @@ const OrderTracker = ({ role }) => {
   const [orders, setOrders] = useState([]);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
-  
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [chatPartner, setChatPartner] = useState(null);
 
@@ -24,9 +23,7 @@ const OrderTracker = ({ role }) => {
     }
   };
 
-  useEffect(() => {
-    fetchOrders();
-  }, []);
+  useEffect(() => { fetchOrders(); }, []);
 
   const updateStatus = async (id, newStatus) => {
     try {
@@ -42,9 +39,26 @@ const OrderTracker = ({ role }) => {
     }
   };
 
+  const handlePayment = async (orderTitle, budget) => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await axios.post('http://localhost:5000/api/payment/create-checkout-session', {
+        orderTitle,
+        budget
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.data.url) {
+        window.location.href = res.data.url;
+      }
+    } catch (error) {
+      alert("Stripe Error: Make sure your Secret Key is in .env");
+    }
+  };
+
   return (
     <div className="mt-8 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md border border-gray-100 dark:border-gray-700">
-      <h3 className="text-xl font-bold mb-4 text-gray-800 dark:text-white">
+      <h3 className="text-xl font-bold mb-4 text-gray-800 dark:text-white font-serif italic">
         {role === 'CUSTOMER' ? 'My Sent Requests' : 'Incoming Orders'}
       </h3>
       <div className="overflow-x-auto">
@@ -55,6 +69,7 @@ const OrderTracker = ({ role }) => {
               <th className="p-3">{role === 'CUSTOMER' ? 'Provider' : 'Customer'}</th>
               <th className="p-3">Budget</th>
               <th className="p-3">Status</th>
+              <th className="p-3">Payment</th>
               <th className="p-3">Action</th>
             </tr>
           </thead>
@@ -63,9 +78,9 @@ const OrderTracker = ({ role }) => {
               <tr key={order._id} className="border-t border-gray-100 dark:border-gray-700">
                 <td className="p-3 font-medium text-gray-700 dark:text-gray-200">{order.listing?.title}</td>
                 <td className="p-3 dark:text-gray-300">{role === 'CUSTOMER' ? order.provider?.name : order.customer?.name}</td>
-                <td className="p-3 font-semibold text-gray-800 dark:text-gray-100">${order.budget}</td>
+                <td className="p-3 font-bold text-gray-800 dark:text-gray-100">${order.budget}</td>
                 <td className="p-3">
-                  <span className={`px-2 py-1 rounded-full text-xs font-bold ${
+                  <span className={`px-2 py-1 rounded-full text-[10px] font-black uppercase ${
                     order.status === 'Pending' ? 'bg-yellow-100 text-yellow-700' : 
                     order.status === 'In Progress' ? 'bg-blue-100 text-blue-700' : 
                     order.status === 'Delivered' ? 'bg-purple-100 text-purple-700' : 'bg-green-100 text-green-700'
@@ -73,6 +88,16 @@ const OrderTracker = ({ role }) => {
                     {order.status}
                   </span>
                 </td>
+                
+                {/* PAYMENT STATUS COLUMN */}
+                <td className="p-3">
+                  {order.status === 'Delivered' || order.status === 'Completed' ? (
+                    <span className="text-green-500 font-bold text-xs">● Confirmed</span>
+                  ) : (
+                    <span className="text-gray-400 text-xs italic">Pending</span>
+                  )}
+                </td>
+
                 <td className="p-3 flex items-center gap-2">
                   <button 
                     onClick={() => {
@@ -81,49 +106,40 @@ const OrderTracker = ({ role }) => {
                       setChatPartner({ id: pId, name: pName });
                       setIsChatOpen(true);
                     }}
-                    className="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-3 py-1 rounded text-xs font-bold hover:bg-green-600 hover:text-white transition"
+                    className="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 p-2 rounded hover:bg-green-600 hover:text-white transition"
+                    title="Open Chat"
                   >
-                    Chat 💬
+                    💬
                   </button>
 
                   {role === 'SERVICE_PROVIDER' && (
-                    <div className="space-x-2">
-                      {order.status === 'Pending' && <button onClick={() => updateStatus(order._id, 'Accepted')} className="text-green-600 dark:text-green-400 hover:underline font-medium text-xs">Accept</button>}
-                      {order.status === 'Accepted' && <button onClick={() => updateStatus(order._id, 'In Progress')} className="text-blue-600 dark:text-blue-400 hover:underline font-medium text-xs">Start</button>}
-                      {order.status === 'In Progress' && <button onClick={() => updateStatus(order._id, 'Delivered')} className="text-purple-600 dark:text-purple-400 hover:underline font-medium text-xs">Deliver</button>}
+                    <div className="flex gap-1">
+                      {order.status === 'Pending' && <button onClick={() => updateStatus(order._id, 'Accepted')} className="text-green-600 font-black text-[10px] border border-green-600 px-2 rounded">ACCEPT</button>}
+                      {order.status === 'Accepted' && <button onClick={() => updateStatus(order._id, 'In Progress')} className="text-blue-600 font-black text-[10px] border border-blue-600 px-2 rounded">START</button>}
+                      {order.status === 'In Progress' && <button onClick={() => updateStatus(order._id, 'Delivered')} className="text-purple-600 font-black text-[10px] border border-purple-600 px-2 rounded">DELIVER</button>}
                     </div>
                   )}
 
                   {role === 'CUSTOMER' && order.status === 'Delivered' && (
-                    <button 
-                      onClick={() => { setSelectedOrder(order); setShowReviewModal(true); }}
-                      className="bg-yellow-500 text-white px-3 py-1 rounded text-xs font-bold hover:bg-yellow-600 transition"
-                    >
-                      Rate
-                    </button>
+                    <div className="flex gap-2">
+                      <button onClick={() => handlePayment(order.listing?.title, order.budget)} className="bg-blue-600 text-white px-2 py-1 rounded text-[10px] font-black hover:bg-blue-700 shadow-md">PAY 💳</button>
+                      <button onClick={() => { setSelectedOrder(order); setShowReviewModal(true); }} className="bg-yellow-500 text-white px-2 py-1 rounded text-[10px] font-black hover:bg-yellow-600 shadow-md">RATE ⭐</button>
+                    </div>
                   )}
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-        {orders.length === 0 && <p className="p-10 text-center text-gray-400 italic">No orders found.</p>}
+        {orders.length === 0 && <p className="p-10 text-center text-gray-400 italic">No orders to display.</p>}
       </div>
 
       {showReviewModal && selectedOrder && (
-        <ReviewProvider 
-          providerId={selectedOrder.provider?._id} 
-          providerName={selectedOrder.provider?.name} 
-          onClose={() => { setShowReviewModal(false); fetchOrders(); }} 
-        />
+        <ReviewProvider providerId={selectedOrder.provider?._id} providerName={selectedOrder.provider?.name} onClose={() => { setShowReviewModal(false); fetchOrders(); }} />
       )}
 
       {isChatOpen && chatPartner && (
-        <ChatWindow 
-          receiverId={chatPartner.id} 
-          receiverName={chatPartner.name} 
-          onClose={() => setIsChatOpen(false)} 
-        />
+        <ChatWindow receiverId={chatPartner.id} receiverName={chatPartner.name} onClose={() => setIsChatOpen(false)} />
       )}
     </div>
   );
