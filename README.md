@@ -116,6 +116,8 @@ Run the React development server:
 code
 Bash
 npm run dev
+
+here is see to full images
 Open http://localhost:5173 in your browser. The backend runs on http://localhost:5000.
  <img width="1366" height="728" alt="Screenshot from 2026-06-18 10-46-11" src="https://github.com/user-attachments/assets/8f4f32c4-97cd-4d87-9e8d-2271b4faab97" />
 <img width="1366" height="728" alt="Screenshot from 2026-06-18 10-46-31" src="https://github.com/user-attachments/assets/bb483d76-1c93-41cd-b60a-9590d75b19a4" />
